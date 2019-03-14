@@ -11,7 +11,7 @@ gradlePlugin {
     plugins {
         create("dependencyPublication") {
             id = "net.nemerosa.dependencyPublication"
-            implementationClass = "net.nemerosa.gradle.dependency.publication.GradleDependencyPublicationPlugin"
+            implementationClass = "net.nemerosa.gradle.dependency.publication.DependencyPublicationPlugin"
         }
     }
 }
