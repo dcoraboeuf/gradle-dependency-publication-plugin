@@ -1,11 +1,17 @@
 plugins {
-  `kotlin-dsl`
+    `java-gradle-plugin`
+    `kotlin-dsl`
 }
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
-dependencies {
-    implementation(gradleApi())
+gradlePlugin {
+    plugins {
+        create("dependencyPublication") {
+            id = "net.nemerosa.dependencyPublication"
+            implementationClass = "net.nemerosa.gradle.dependency.publication.GradleDependencyPublicationPlugin"
+        }
+    }
 }
