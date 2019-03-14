@@ -14,4 +14,12 @@ class DependencyPublicationExtension {
      */
     var subprojectRelName: String = "subproject"
 
+    /**
+     * Publisher
+     */
+    var publisher: DependencyPublisher = TextDependencyPublisher(
+            formatter = FlatDependencyTextFormatter(),
+            output = StdOutDependencyTextOutput()
+    )
+
 }

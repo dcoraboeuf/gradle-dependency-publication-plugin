@@ -30,6 +30,12 @@ open class DependencyPublicationTask : DefaultTask() {
     @Input
     var subprojectRelName: String? = null
 
+    /**
+     * Publisher
+     */
+    @Input
+    var publisher: DependencyPublisher? = null
+
 
     @TaskAction
     fun publish() {
@@ -52,7 +58,9 @@ open class DependencyPublicationTask : DefaultTask() {
                 rootNode.dependency(relName, subprojectNode)
             }
         }
-        // TODO Publication of the data
+        // Publication of the data
+        val publisher = this.publisher ?: extension.publisher
+        publisher.publish(rootNode)
     }
 
     private fun collectProject(node: DependencyNode, extension: DependencyPublicationExtension, project: Project) {
