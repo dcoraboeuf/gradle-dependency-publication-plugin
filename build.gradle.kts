@@ -15,3 +15,8 @@ gradlePlugin {
         }
     }
 }
+
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+}
