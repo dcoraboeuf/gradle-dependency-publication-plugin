@@ -6,14 +6,16 @@ data class DependencyNode(
         val version: String
 ) {
 
-    val dependencies = mutableMapOf<String, MutableList<DependencyNode>>()
+    val dependencies: MutableList<DependencyLink> = mutableListOf()
 
     fun dependency(link: String, child: DependencyNode) {
-        val children = dependencies[link]
-        if (children == null) {
-            dependencies[link] = mutableListOf(child)
+        val existingLink = dependencies.find {
+            it.node == child
+        }
+        if (existingLink != null) {
+            existingLink.rels += link
         } else {
-            children += child
+            dependencies += DependencyLink(child, link)
         }
     }
 }
