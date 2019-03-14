@@ -1,7 +1,11 @@
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
+    id("net.nemerosa.versioning") version "2.8.2"
 }
+
+group = "net.nemerosa"
+version = versioning.info.display
 
 repositories {
     mavenCentral()
