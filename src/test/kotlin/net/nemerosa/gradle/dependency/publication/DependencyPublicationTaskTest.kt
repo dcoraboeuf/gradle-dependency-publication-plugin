@@ -53,6 +53,26 @@ internal class DependencyPublicationTaskTest {
         }
     }
 
+    @Test
+    fun `Dependencies as a file`() {
+        simpleProject {
+            configure<DependencyPublicationExtension> {
+                text {
+                    toFile("build/dependencies.properties")
+                }
+            }
+        } publish {
+            val output = file("build/dependencies.properties")
+            val lines = output.readLines()
+            assertEquals(
+                    listOf(
+                            "org.apache.commons:commons-lang3 = 3.8.1"
+                    ),
+                    lines
+            )
+        }
+    }
+
     private fun simpleProject(
             configuration: Project.() -> Unit
     ): ProjectContext {

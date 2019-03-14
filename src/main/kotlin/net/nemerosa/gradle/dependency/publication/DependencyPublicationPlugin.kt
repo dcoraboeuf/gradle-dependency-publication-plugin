@@ -11,7 +11,7 @@ class DependencyPublicationPlugin : Plugin<Project> {
     override fun apply(project: Project) {
 
         // Extension for general properties
-        project.extensions.create<DependencyPublicationExtension>("dependencyPublication")
+        project.extensions.create<DependencyPublicationExtension>("dependencyPublication", project)
 
         // Creates the dependency publication task at root level
         project.tasks.register<DependencyPublicationTask>("dependencyPublish")
