@@ -9,4 +9,9 @@ class DependencyPublicationExtension {
      */
     var configurations = mutableSetOf("api", "implementation", "compile", "runtime")
 
+    /**
+     * Name of the "subproject" relationship
+     */
+    var subprojectRelName: String = "subproject"
+
 }

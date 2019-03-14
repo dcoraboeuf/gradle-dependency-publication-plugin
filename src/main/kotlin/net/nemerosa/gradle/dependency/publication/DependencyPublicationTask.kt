@@ -24,6 +24,12 @@ open class DependencyPublicationTask : DefaultTask() {
     @Input
     var overrideConfigurations: Boolean = false
 
+    /**
+     * Name of the "subproject" relationship
+     */
+    @Input
+    var subprojectRelName: String? = null
+
 
     @TaskAction
     fun publish() {
@@ -36,12 +42,14 @@ open class DependencyPublicationTask : DefaultTask() {
         // List of projects to consider
         val subprojects = subprojects ?: extension.subprojects
         if (subprojects) {
+            val relName = subprojectRelName ?: extension.subprojectRelName
             project.subprojects {
                 // Creates a node for this project
                 val subprojectNode = createDependencyNode()
                 // Collection
                 collectProject(subprojectNode, extension, this)
-                // TODO Adds a "subproject" dependency
+                // Adds a "subproject" dependency
+                rootNode.dependency(relName, subprojectNode)
             }
         }
         // TODO Publication of the data
