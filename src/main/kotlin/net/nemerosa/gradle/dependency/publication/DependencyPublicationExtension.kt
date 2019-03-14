@@ -1,6 +1,6 @@
 package net.nemerosa.gradle.dependency.publication
 
-class DependencyPublicationExtension {
+open class DependencyPublicationExtension {
 
     var subprojects = true
 
