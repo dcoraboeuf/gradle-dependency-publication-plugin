@@ -1,5 +1,6 @@
 package net.nemerosa.gradle.dependency.publication
 
+import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.named
@@ -13,6 +14,20 @@ internal class DependencyPublicationTaskTest {
 
     @Test
     fun `Simple dependencies`() {
+        withSimpleProject { _, node ->
+            assertNotNull(node, "Root node is set") { root ->
+                val versions = root.dependencies.map {
+                    "${it.node.group}:${it.node.name} = ${it.node.version}"
+                }.toSet()
+                assertEquals(
+                        setOf("org.apache.commons:commons-lang3 = 3.8.1"),
+                        versions
+                )
+            }
+        }
+    }
+
+    private fun withSimpleProject(test: (project: Project, node: DependencyNode?) -> Unit) {
         val project = ProjectBuilder.builder().build()
         project.pluginManager.apply(DependencyPublicationPlugin::class.java)
         val inMemory = InMemoryDependencyPublisher()
@@ -28,15 +43,7 @@ internal class DependencyPublicationTaskTest {
         }
         project.tasks.named<DependencyPublicationTask>("dependencyPublish").get().publish()
         val node = inMemory.node
-        assertNotNull(node, "Root node is set") { root ->
-            val versions = root.dependencies.map {
-                "${it.node.group}:${it.node.name} = ${it.node.version}"
-            }.toSet()
-            assertEquals(
-                    setOf("org.apache.commons:commons-lang3 = 3.8.1"),
-                    versions
-            )
-        }
+        test(project, node)
     }
 
 }
