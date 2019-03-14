@@ -50,18 +50,25 @@ open class DependencyPublicationTask : DefaultTask() {
     private fun collectProject(node: DependencyNode, extension: DependencyPublicationExtension, project: Project) {
         project.configurations.forEach { configuration ->
             if (isConfigurationEligible(extension, configuration)) {
-                collectConfiguration(node, extension, project, configuration)
+                collectConfiguration(node, configuration)
             }
         }
     }
 
     private fun collectConfiguration(
             node: DependencyNode,
-            extension: DependencyPublicationExtension,
-            project: Project,
             configuration: Configuration
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        configuration.resolvedConfiguration.firstLevelModuleDependencies.forEach { resolvedDependency ->
+            val depNode = DependencyNode(
+                    group = resolvedDependency.moduleGroup,
+                    name = resolvedDependency.moduleName,
+                    version = resolvedDependency.moduleVersion
+            )
+            // TODO Artifacts
+            // Adds to the parent node
+            node.dependency(configuration.name, depNode)
+        }
     }
 
     private fun isConfigurationEligible(extension: DependencyPublicationExtension, configuration: Configuration): Boolean {
@@ -78,7 +85,9 @@ open class DependencyPublicationTask : DefaultTask() {
     }
 
     private fun Project.createDependencyNode() = DependencyNode(
-            group = group.toString()
+            group = group.toString(),
+            name = name,
+            version = version.toString()
     )
 
 }
