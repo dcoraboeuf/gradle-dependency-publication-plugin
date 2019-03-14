@@ -14,7 +14,15 @@ internal class DependencyPublicationTaskTest {
 
     @Test
     fun `Simple dependencies`() {
-        withSimpleProject { _, node ->
+        val project = ProjectBuilder.builder().build()
+        project.pluginManager.apply(DependencyPublicationPlugin::class.java)
+        val inMemory = InMemoryDependencyPublisher()
+        simpleProject {
+            extensions.configure<DependencyPublicationExtension> {
+                publisher = inMemory
+            }
+        } publish {
+            val node = inMemory.node
             assertNotNull(node, "Root node is set") { root ->
                 val versions = root.dependencies.map {
                     "${it.node.group}:${it.node.name} = ${it.node.version}"
@@ -27,13 +35,29 @@ internal class DependencyPublicationTaskTest {
         }
     }
 
-    private fun withSimpleProject(test: (project: Project, node: DependencyNode?) -> Unit) {
+    @Test
+    fun `Dependencies as a string`() {
+        val output = StringDependencyTextOutput()
+        simpleProject {
+            extensions.configure<DependencyPublicationExtension> {
+                publisher = TextDependencyPublisher(
+                        FlatDependencyTextFormatter(),
+                        output
+                )
+            }
+        } publish {
+            assertEquals(
+                    "org.apache.commons:commons-lang3 = 3.8.1\n",
+                    output.value
+            )
+        }
+    }
+
+    private fun simpleProject(
+            configuration: Project.() -> Unit
+    ): ProjectContext {
         val project = ProjectBuilder.builder().build()
         project.pluginManager.apply(DependencyPublicationPlugin::class.java)
-        val inMemory = InMemoryDependencyPublisher()
-        project.extensions.configure<DependencyPublicationExtension> {
-            publisher = inMemory
-        }
         project.repositories {
             mavenCentral()
         }
@@ -41,9 +65,17 @@ internal class DependencyPublicationTaskTest {
         project.dependencies {
             "api"("org.apache.commons:commons-lang3:3.8.1")
         }
-        project.tasks.named<DependencyPublicationTask>("dependencyPublish").get().publish()
-        val node = inMemory.node
-        test(project, node)
+        project.configuration()
+        return ProjectContext(project)
+    }
+
+    private class ProjectContext(
+            private val project: Project
+    ) {
+        infix fun publish(code: Project.() -> Unit) {
+            project.tasks.named<DependencyPublicationTask>("dependencyPublish").get().publish()
+            project.code()
+        }
     }
 
 }
